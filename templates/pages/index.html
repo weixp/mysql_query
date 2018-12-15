@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+
+    <title>SB Admin 2 - Bootstrap Admin Theme</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet" />
+
+    <!-- MetisMenu CSS -->
+    <link href="{% static 'vendor/metisMenu/metisMenu.min.css' %}" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet" />
+
+    <!-- Morris Charts CSS -->
+    <link href="{% static 'vendor/morrisjs/morris.css' %}"  rel="stylesheet" />
+
+    <!-- Custom Fonts -->
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}"  rel="stylesheet"  type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <!--
+      HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries
+    -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+    <div id="wrapper">
+      <!-- Navigation -->
+      <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" >
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse" >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span> <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="index.html">SB Admin v2.0</a>
+        </div>
+        <!-- /.navbar-header -->
+
+        <div class="navbar-default sidebar" role="navigation">
+          <div class="sidebar-nav navbar-collapse">
+            <ul class="nav" id="side-menu">
+              <li class="sidebar-search">
+                <div class="input-group custom-search-form">
+                  <input type="text" class="form-control" placeholder="Search..."/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">
+                      <i class="fa fa-search"></i>
+                    </button>
+                  </span>
+                </div>
+                <!-- /input-group -->
+              </li>
+              <li>
+                <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+              </li>
+              <li v-for="item in items">
+                <a href="#" v-on:click="show_table"><i class="fa fa-bar-chart-o fa-fw"></i>{% verbatim %} {{item.dbname}} {% endverbatim %} <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" >
+                     <li v-for="table in item.tables" v-on:click="show_tables">
+                         <a href="#">{% verbatim %} {{table}} {% endverbatim %}</a>
+                     </li>
+                </ul>
+              </li>
+              <li>
+                <a href="tables.html"><i class="fa fa-table fa-fw"></i> Tables</a>
+              </li>
+              <li>
+                <a href="forms.html"><i class="fa fa-edit fa-fw"></i> Forms</a>
+              </li>
+              <li>
+                <a href="#"><i class="fa fa-wrench fa-fw"></i> UI Elements<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                  <li><a href="panels-wells.html">Panels and Wells</a></li>
+                  <li><a href="buttons.html">Buttons</a></li>
+                  <li><a href="notifications.html">Notifications</a></li>
+                  <li><a href="typography.html">Typography</a></li>
+                  <li><a href="icons.html"> Icons</a></li>
+                  <li><a href="grid.html">Grid</a></li>
+                </ul>
+                <!-- /.nav-second-level -->
+              </li>
+              <li>
+                <a href="#"><i class="fa fa-sitemap fa-fw"></i> Multi-Level Dropdown<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                  <li><a href="#">Second Level Item</a></li>
+                  <li><a href="#">Second Level Item</a></li>
+                  <li>
+                    <a href="#">Third Level <span class="fa arrow"></span></a>
+                    <ul class="nav nav-third-level">
+                      <li><a href="#">Third Level Item</a></li>
+                      <li><a href="#">Third Level Item</a></li>
+                      <li><a href="#">Third Level Item</a></li>
+                      <li><a href="#">Third Level Item</a></li>
+                    </ul>
+                    <!-- /.nav-third-level -->
+                  </li>
+                </ul>
+                <!-- /.nav-second-level -->
+              </li>
+              <li>
+                <a href="#"
+                  ><i class="fa fa-files-o fa-fw"></i> Sample Pages<span
+                    class="fa arrow"
+                  ></span
+                ></a>
+                <ul class="nav nav-second-level">
+                  <li><a href="blank.html">Blank Page</a></li>
+                  <li><a href="login.html">Login Page</a></li>
+                </ul>
+                <!-- /.nav-second-level -->
+              </li>
+            </ul>
+          </div>
+          <!-- /.sidebar-collapse -->
+        </div>
+        <!-- /.navbar-static-side -->
+      </nav>
+
+      <div id="page-wrapper">
+        <!-- /.row -->
+        <div class="row">
+          <div class="col-lg-8">
+            <codemirror id="myTextarea" :options="options"></codemirror>
+              <hr>
+              <button v-on:click="initRecordTable" class="btn btn-default" >执行</button>
+          </div>
+          <!-- /.col-lg-8 -->
+        </div>
+        <div class="row">
+          <div class="col-lg-12">
+                <table id="example1" class="table table-striped table-hover table-bordered" >
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Position</th>
+                                <th>Office</th>
+                                <th>Age</th>
+                                <th>Start date</th>
+                                <th>Salary</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Tiger Nixon</td>
+                                <td>System Architect</td>
+                                <td>Edinburgh</td>
+                                <td>61</td>
+                                <td>2011/04/25</td>
+                                <td>$320,800</td>
+                            </tr>
+                            <tr>
+                                <td>Garrett Winters</td>
+                                <td>Accountant</td>
+                                <td>Tokyo</td>
+                                <td>63</td>
+                                <td>2011/07/25</td>
+                                <td>$170,750</td>
+                            </tr>
+                            <tr>
+                                <td>Jackson Bradshaw</td>
+                                <td>Director</td>
+                                <td>New York</td>
+                                <td>65</td>
+                                <td>2008/09/26</td>
+                                <td>$645,750</td>
+                            </tr>
+                            <tr>
+                                <td>Olivia Liang</td>
+                                <td>Support Engineer</td>
+                                <td>Singapore</td>
+                                <td>64</td>
+                                <td>2011/02/03</td>
+                                <td>$234,500</td>
+                            </tr>
+                            <tr>
+                                <td>Bruno Nash</td>
+                                <td>Software Engineer</td>
+                                <td>London</td>
+                                <td>38</td>
+                                <td>2011/05/03</td>
+                                <td>$163,500</td>
+                            </tr>
+                            <tr>
+                                <td>Sakura Yamamoto</td>
+                                <td>Support Engineer</td>
+                                <td>Tokyo</td>
+                                <td>37</td>
+                                <td>2009/08/19</td>
+                                <td>$139,575</td>
+                            </tr>
+                            <tr>
+                                <td>Thor Walton</td>
+                                <td>Developer</td>
+                                <td>New York</td>
+                                <td>61</td>
+                                <td>2013/08/11</td>
+                                <td>$98,540</td>
+                            </tr>
+                            <tr>
+                                <td>Finn Camacho</td>
+                                <td>Support Engineer</td>
+                                <td>San Francisco</td>
+                                <td>47</td>
+                                <td>2009/07/07</td>
+                                <td>$87,500</td>
+                            </tr>
+                            <tr>
+                                <td>Serge Baldwin</td>
+                                <td>Data Coordinator</td>
+                                <td>Singapore</td>
+                                <td>64</td>
+                                <td>2012/04/09</td>
+                                <td>$138,575</td>
+                            </tr>
+                            <tr>
+                                <td>Zenaida Frank</td>
+                                <td>Software Engineer</td>
+                                <td>New York</td>
+                                <td>63</td>
+                                <td>2010/01/04</td>
+                                <td>$125,250</td>
+                            </tr>
+                            <tr>
+                                <td>Zorita Serrano</td>
+                                <td>Software Engineer</td>
+                                <td>San Francisco</td>
+                                <td>56</td>
+                                <td>2012/06/01</td>
+                                <td>$115,000</td>
+                            </tr>
+                            <tr>
+                                <td>Jennifer Acosta</td>
+                                <td>Junior Javascript Developer</td>
+                                <td>Edinburgh</td>
+                                <td>43</td>
+                                <td>2013/02/01</td>
+                                <td>$75,650</td>
+                            </tr>
+                            <tr>
+                                <td>Cara Stevens</td>
+                                <td>Sales Assistant</td>
+                                <td>New York</td>
+                                <td>46</td>
+                                <td>2011/12/06</td>
+                                <td>$145,600</td>
+                            </tr>
+                            <tr>
+                                <td>Hermione Butler</td>
+                                <td>Regional Director</td>
+                                <td>London</td>
+                                <td>47</td>
+                                <td>2011/03/21</td>
+                                <td>$356,250</td>
+                            </tr>
+                            <tr>
+                                <td>Lael Greer</td>
+                                <td>Systems Administrator</td>
+                                <td>London</td>
+                                <td>21</td>
+                                <td>2009/02/27</td>
+                                <td>$103,500</td>
+                            </tr>
+                            <tr>
+                                <td>Jonas Alexander</td>
+                                <td>Developer</td>
+                                <td>San Francisco</td>
+                                <td>30</td>
+                                <td>2010/07/14</td>
+                                <td>$86,500</td>
+                            </tr>
+                            <tr>
+                                <td>Shad Decker</td>
+                                <td>Regional Director</td>
+                                <td>Edinburgh</td>
+                                <td>51</td>
+                                <td>2008/11/13</td>
+                                <td>$183,000</td>
+                            </tr>
+                            <tr>
+                                <td>Michael Bruce</td>
+                                <td>Javascript Developer</td>
+                                <td>Singapore</td>
+                                <td>29</td>
+                                <td>2011/06/27</td>
+                                <td>$183,000</td>
+                            </tr>
+                            <tr>
+                                <td>Donna Snider</td>
+                                <td>Customer Support</td>
+                                <td>New York</td>
+                                <td>27</td>
+                                <td>2011/01/25</td>
+                                <td>$112,000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+          </div>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /#page-wrapper -->
+    </div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="{% static 'vendor/metisMenu/metisMenu.min.js' %}"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
+    <script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="{% static 'js/sb-admin-2.js' %}"></script>
+    <script src="{% static 'codemirror/lib/codemirror.js' %}"></script>
+    <script src="{% static 'codemirror/mode/sql/sql.js' %}"></script>
+    <script src="{% static 'codemirror/addon/hint/show-hint.js' %}"></script>
+    <link href="{% static 'codemirror/addon/hint/show-hint.css' %}" rel="stylesheet"/>
+    <link href="{% static 'codemirror/lib/codemirror.css' %}" rel="stylesheet" />
+    <script src="{% static 'codemirror/addon/hint/sql-hint.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css">
+    <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script>
+      Vue.component("codemirror", {
+        props: {
+          value: {
+            type: String,
+            default: ""
+          },
+          options: {
+            type: Object,
+            default: function() {
+              return {
+                mode: "text/javascript",
+                lineNumbers: true,
+                lineWrapping: true
+              };
+            }
+          }
+        },
+        data: function() {
+          return {
+            skipNextChangeEvent: false
+          };
+        },
+        ready: function() {
+          var _this = this;
+          this.editor = CodeMirror.fromTextArea(
+            this.$el.querySelector("textarea"),
+            this.options
+          );
+          this.editor.setValue(this.value);
+          this.editor.on("change", function(cm) {
+            if (_this.skipNextChangeEvent) {
+              _this.skipNextChangeEvent = false;
+              return;
+            }
+            _this.value = cm.getValue();
+            if (!!_this.$emit) {
+              _this.$emit("change", cm.getValue());
+            }
+          });
+        },
+        mounted: function() {
+          var _this = this;
+          this.editor = CodeMirror.fromTextArea(
+            this.$el.querySelector("textarea"),
+            this.options
+          );
+          this.editor.setValue(this.value);
+          this.editor.on("change", function(cm) {
+            if (_this.skipNextChangeEvent) {
+              _this.skipNextChangeEvent = false;
+              return;
+            }
+            if (!!_this.$emit) {
+              _this.$emit("change", cm.getValue());
+              _this.$emit("input", cm.getValue());
+            }
+          });
+        },
+        watch: {
+          value: function(newVal, oldVal) {
+            var editorValue = this.editor.getValue();
+            if (newVal !== editorValue) {
+              this.skipNextChangeEvent = true;
+              var scrollInfo = this.editor.getScrollInfo();
+              this.editor.setValue(newVal);
+              this.editor.scrollTo(scrollInfo.left, scrollInfo.top);
+            }
+          },
+          options: function(newOptions, oldVal) {
+            if (typeof newOptions === "object") {
+              for (var optionName in newOptions) {
+                if (newOptions.hasOwnProperty(optionName)) {
+                  this.editor.setOption(optionName, newOptions[optionName]);
+                }
+              }
+            }
+          }
+        },
+        beforeDestroy: function() {
+          if (this.editor) {
+            this.editor.toTextArea();
+          }
+        },
+        template: '<div class="vue-codemirror-wrap"><textarea></textarea></div>'
+      });
+
+      var app = new Vue({
+        el: "#wrapper",
+        data: {
+          items: [{ dbname: "Foo", tables: ["table1", "table2"] }]
+        },
+        computed: {
+          options: function() {
+            return {
+              mode: "text/x-mysql",
+              height: 100,
+              indentUnit: 4,
+              lineNumbers: true,
+              lineWrapping: true,
+              extraKeys: { "Tab": "autocomplete" }
+            };
+          }
+        },
+        methods: {
+        show_tables:function(){
+        alert('happy birthday');
+        },
+        show_table:function(){
+          return this.items.tables=['table3','tabler3','table6'];
+        },
+            initRecordTable: function(){
+                  $('#example1').DataTable({
+                      "paging": true,// 开启分页
+                      "pageLength": 10,//每页显示数量
+                      "lengthChange": true,//是否允许用户改变表格每页显示的记录数
+                      "searching": true,//搜索
+                      "ordering": true,//排序
+                      "info": true,//左下角 从 1 到 5 /共 23 条数据
+                      "autoWidth": true,
+                      "scrollXInner": "100%",//表格的内容宽度
+                      "aaSorting": [
+                          [3, 'asc']
+                      ],
+                      "language": {
+                          "sInfoEmpty": "没有数据",
+                          "sZeroRecords": "没有查找到满足条件的数据",
+                          "sInfo": "从 _START_ 到 _END_ /共 _TOTAL_ 条数据",
+                          "sLengthMenu": "每页显示 _MENU_ 条记录",
+                          "sInfoFiltered": "(从 _MAX_ 条数据中检索)",
+                          "oPaginate": {
+                              "sFirst": "首页",
+                              "sPrevious": "前一页",
+                              "sNext": "后一页",
+                              "sLast": "尾页"
+                          }
+                      },
+                  })},
+          sendGetByStr() {
+            axios
+              .get(
+                "/Users/weixinping/Downloads/twts_22_startbootstrap/data/test.json"
+              )
+              .then(function(response) {
+                console.log(response.data);
+              })
+              .catch(function(error) {
+                console.log(error);
+              });
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+
+
